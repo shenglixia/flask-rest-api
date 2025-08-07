@@ -1,16 +1,24 @@
-from flask_io import fields, Schema, post_dump
 from .models import Company
 
 
-class CompanySchema(Schema):
-    id = fields.Integer(dump_only=True)
-    name = fields.String(required=True)
-    country_code = fields.String(required=True)
-    website = fields.String(allow_none=True)
-    enabled = fields.Boolean(required=True)
-    updated_at = fields.DateTime(dump_only=True)
-    created_at = fields.DateTime(dump_only=True)
+def company_to_dict(company):
+    """Convert Company model to dictionary"""
+    return {
+        'id': company.id,
+        'name': company.name,
+        'country_code': company.country_code,
+        'website': company.website,
+        'enabled': company.enabled,
+        'updated_at': company.updated_at.isoformat() if company.updated_at else None,
+        'created_at': company.created_at.isoformat() if company.created_at else None
+    }
 
-    @post_dump
-    def make_object(self, data):
-        return Company(**data)
+
+def dict_to_company(data):
+    """Convert dictionary to Company model"""
+    return Company(
+        name=data.get('name'),
+        country_code=data.get('country_code'),
+        website=data.get('website'),
+        enabled=data.get('enabled', True)
+    )
